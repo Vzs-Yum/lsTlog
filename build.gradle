@@ -1,0 +1,21 @@
+group 'vzs.yum'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile (
+            'org.projectlombok:lombok:1.14.4',
+            'log4j:log4j:1.2.17',
+            'ch.qos.logback:logback-parent:1.1.2',
+            'com.google.guava:guava:19.0',
+            'org.apache.poi:poi-ooxml:3.9'
+    )
+}
