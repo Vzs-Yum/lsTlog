@@ -19,6 +19,8 @@ public class TLogTransactionFooter {
     private Long tableNo;
     private Long guestsNum;
     private List<TLogTransactionNoun> nouns = Lists.newArrayList();
+    private String fileName;
+    private boolean hasDiscFlag;
 
     public TLogTransactionNoun createNoun() {
         TLogTransactionNoun noun = new TLogTransactionNoun();

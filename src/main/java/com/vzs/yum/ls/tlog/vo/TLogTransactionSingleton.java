@@ -27,10 +27,11 @@ public class TLogTransactionSingleton {
     private TLogTransactionFooter currentTLogTransactionFooter;
     private TLogTransactionNoun currentTransactionNoun;
 
-    public TLogTransaction findTransationLogAndCreateFooter(String transactionId, Date transactionDate) {
+    public TLogTransaction findTransationLogAndCreateFooter(String transactionId, Date transactionDate, String fileName) {
         TLogTransaction transationLog = tLogTransactionHolder.findTransationLog(transactionId, transactionDate);
         currentTLogTransaction = transationLog;
         currentTLogTransactionFooter = currentTLogTransaction.createTLogTransactionFooter();
+        currentTLogTransactionFooter.setFileName(fileName);
         return transationLog;
     }
 

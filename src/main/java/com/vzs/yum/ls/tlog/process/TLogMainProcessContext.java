@@ -1,6 +1,7 @@
 package com.vzs.yum.ls.tlog.process;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Builder;
 
 /**
@@ -10,4 +11,6 @@ import lombok.experimental.Builder;
 @Getter
 public class TLogMainProcessContext {
     private String tLogFolderPath;
+    @Setter
+    private boolean isDebug;
 }

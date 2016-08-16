@@ -11,12 +11,16 @@ import com.vzs.yum.ls.tlog.report.TLogReportExecute;
  */
 public class TLogMain {
     public static void main (String ... args) {
-        String folderPath = "/Users/byao/Ben/doc/yum/T-LOG";
-        TLogMainProcessContext tLogMainProcessContext = TLogMainProcessContext.builder().tLogFolderPath(folderPath).build();
-        TLogProcess tLogMainProcess = new TLogMainProcess(tLogMainProcessContext);
-        tLogMainProcess.execute();
+//        String folderPath = "/Users/byao/Ben/doc/yum/T-LOG";
+//        TLogMainProcessContext tLogMainProcessContext = TLogMainProcessContext.builder().tLogFolderPath(folderPath).build();
+//        TLogProcess tLogMainProcess = new TLogMainProcess(tLogMainProcessContext);
+//        tLogMainProcess.execute();
+//
+//        tLogMainProcessContext.setDebug(true);
+//        TLogReportExecute reportExecute = new TLogExcelReporterExecuter(tLogMainProcessContext);
+//        reportExecute.execute();
 
-        TLogReportExecute reportExecute = new TLogExcelReporterExecuter(tLogMainProcessContext);
-        reportExecute.execute();
+        TLogUI tLogUI = new TLogUI();
+
     }
 }

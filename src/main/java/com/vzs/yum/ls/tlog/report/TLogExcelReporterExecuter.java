@@ -1,15 +1,14 @@
 package com.vzs.yum.ls.tlog.report;
 
-import com.google.common.collect.Lists;
 import com.vzs.yum.ls.tlog.process.TLogMainProcessContext;
 import com.vzs.yum.ls.tlog.report.xls.XlsxReporter;
 import com.vzs.yum.ls.tlog.util.DateUtils;
 import com.vzs.yum.ls.tlog.util.FileUtils;
-import com.vzs.yum.ls.tlog.util.ListUtils;
 import com.vzs.yum.ls.tlog.vo.TLogTransaction;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionFooter;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionNoun;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionSingleton;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.Collections;
@@ -20,10 +19,11 @@ import java.util.List;
 /**
  * Created by byao on 8/14/16.
  */
+@Slf4j
 public class TLogExcelReporterExecuter implements TLogReportExecute {
     private TLogTransactionSingleton tLogTransactionSingleton = TLogTransactionSingleton.getInstance();
     private TLogMainProcessContext tLogMainProcessContext;
-
+    private  TLogTransactionFooter previousFooter;
     private XlsxReporter xlsxReporter;
 
     public TLogExcelReporterExecuter(TLogMainProcessContext tLogMainProcessContext) {
@@ -32,7 +32,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
 
     public void execute() {
 
-        System.out.println("exporting report");
+        log.info("exporting report");
         String reportFoder = tLogMainProcessContext.getTLogFolderPath() + File.separatorChar + "report";
         FileUtils.makeDirs(reportFoder);
         String reportAbsFilePath = reportFoder + File.separatorChar + "TLog(" + DateUtils.phraseToday() + ").xlsx";
@@ -41,12 +41,20 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
 
         writeHeader(10);
         List<TLogTransaction> tLogTransactionList = tLogTransactionSingleton.findAllTLogTransaction();
+        Collections.sort(tLogTransactionList, new Comparator<TLogTransaction>() {
+            public int compare(TLogTransaction o1, TLogTransaction o2) {
+                if (o1.getTransactionHeaderTime() != null && o2.getTransactionHeaderTime() != null) {
+                    return o1.getTransactionHeaderTime().compareTo(o2.getTransactionHeaderTime());
+                }
+                return 0;
+            }
+        });
         for (TLogTransaction tLogTransaction : tLogTransactionList) {
             addOneTransaction(tLogTransaction);
         }
 
         xlsxReporter.closeAndSave(reportAbsFilePath);
-        System.out.println("report created and close");
+        log.info("report created and close");
     }
 
     private void createXlsx() {
@@ -65,6 +73,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
             }
         });
 
+        previousFooter = null;
         boolean isFirst = true;
         for (TLogTransactionFooter tLogTransactionFooter : transactionFooters) {
             if (isFirst) {
@@ -75,10 +84,11 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
                 if (tLogTransactionFooter.getTender() != null) {
                     operateJudge = "结账";
                 } else {
-                    operateJudge = judgeOperate(tLogTransactionFooter.getNouns());
+                    operateJudge = judgeOperate(tLogTransactionFooter);
                 }
-                writeNounsWithHead(tLogTransaction, tLogTransactionFooter, "Transaction Footer", operateJudge);
+                writeNounsWithHead(tLogTransaction, tLogTransactionFooter, createFooterString(tLogTransactionFooter) , operateJudge);
             }
+            previousFooter = tLogTransactionFooter;
         }
     }
 
@@ -90,6 +100,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         xlsxReporter.addCell("操作内容");
         xlsxReporter.addCell("logged op");
         xlsxReporter.addCell("own op");
+        xlsxReporter.addCell("收银机号");
         xlsxReporter.addCell("操作判断");
         xlsxReporter.addCell("桌号");
         xlsxReporter.addCell("顾客数");
@@ -102,9 +113,26 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         }
     }
 
+    private String createHeaderString (TLogTransactionFooter footer) {
+        String header = "Transaction Header";
+        return appendStringIfNeed(header, footer);
+    }
+
+    private String createFooterString (TLogTransactionFooter footer) {
+        String header = "Transaction Footer";
+        return appendStringIfNeed(header, footer);
+    }
+
+    private String appendStringIfNeed(String str, TLogTransactionFooter footer) {
+        if (tLogMainProcessContext.isDebug()) {
+            str = str + "(" + footer.getFileName() + ")";
+        }
+        return str;
+    }
+
     private void firstLineWrite(TLogTransaction tLogTransaction, TLogTransactionFooter tLogTransactionFooter) {
-        writeLineHeader(tLogTransaction, tLogTransactionFooter, "Transaction Header", "开台", true);
-        writeNounsWithHead(tLogTransaction, tLogTransactionFooter, "Transaction Footer", "第一次存单");
+        writeLineHeader(tLogTransaction, tLogTransactionFooter, createHeaderString(tLogTransactionFooter), "开台", true);
+        writeNounsWithHead(tLogTransaction, tLogTransactionFooter, createFooterString(tLogTransactionFooter), "第一次存单");
     }
 
     private void writeNounsWithHead(TLogTransaction tLogTransaction, TLogTransactionFooter tLogTransactionFooter , String operateContext, String operateJudge) {
@@ -130,16 +158,15 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         xlsxReporter.addCell(mod);
     }
 
-    private String judgeOperate(List<TLogTransactionNoun> nouns) {
-        if (ListUtils.isEmpty(nouns)) {
-            return "查看";
-        }
+    private String judgeOperate(TLogTransactionFooter tLogTransactionFooter) {
+        List<TLogTransactionNoun> nouns = tLogTransactionFooter.getNouns();
+
         boolean hasAdd = false;
         boolean hasDelete = false;
         for (TLogTransactionNoun tLogTransactionNoun : nouns) {
             if (tLogTransactionNoun.isPostDelete() || tLogTransactionNoun.isPreDelete()) {
                 hasDelete = true;
-            } else {
+            } else if (!tLogTransactionNoun.isExisting()){
                 hasAdd = true;
             }
 
@@ -151,7 +178,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
                 for (TLogTransactionNoun setNoun : tLogTransactionNoun.getSetDetailNouns()) {
                     if (setNoun.isPostDelete() || setNoun.isPreDelete()) {
                         hasDelete = true;
-                    } else {
+                    } else if (!tLogTransactionNoun.isExisting()){
                         hasAdd = true;
                     }
 
@@ -160,7 +187,6 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
                     }
                 }
             }
-
         }
         StringBuilder sb = new StringBuilder();
         if (hasAdd) {
@@ -172,6 +198,24 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
             } else {
                 sb.append("删除");
             }
+        }
+
+        if (sb.toString().length() == 0) {
+            if (tLogTransactionFooter.isHasDiscFlag()) {
+                if (previousFooter == null) {
+                    sb.append("打折");
+                } else {
+                    Double preTotal = previousFooter.getTotal();
+                    Double currentTotal = tLogTransactionFooter.getTotal();
+                    if (preTotal != null && currentTotal != null && preTotal > currentTotal) {
+                        sb.append("打折");
+                    }
+                }
+            }
+        }
+
+        if (sb.toString().length() == 0) {
+            sb.append("查看");
         }
         return sb.toString();
     }
@@ -190,6 +234,9 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         Long tableNo = tLogTransactionFooter.getTableNo();
         Long customCount = tLogTransactionFooter.getGuestsNum();
         Double total = tLogTransactionFooter.getTotal();
+        String tdName = tLogTransactionFooter.getFileName();
+        tdName = tdName.replace(".txt", "");
+        tdName = tdName.substring(tdName.length() - 2);
 
         xlsxReporter.addCell(transactionid);
         xlsxReporter.addCellDate(operateTime);
@@ -197,6 +244,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         xlsxReporter.addCell(operateContext);
         xlsxReporter.addCell(loggedOp);
         xlsxReporter.addCell(ownedOp);
+        xlsxReporter.addCell(tdName);
         xlsxReporter.addCell(operateJudge);
         xlsxReporter.addCell(tableNo);
         xlsxReporter.addCell(customCount);

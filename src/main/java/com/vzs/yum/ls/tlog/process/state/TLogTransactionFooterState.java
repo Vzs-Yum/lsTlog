@@ -16,11 +16,12 @@ public class TLogTransactionFooterState extends TLogState {
         TLogTransactionFooter currentTLogTransactionFooter = tLogTransactionSingleton.getCurrentTLogTransactionFooter();
         if (TLogTransactionSign.isTotal(getTLogLine())) {
             String totalPrice = splitedTlog[5].replace("$", "");
-
             currentTLogTransactionFooter.setTotal(NumberUtils.pharseDouble(totalPrice));
         } else if (TLogTransactionSign.isTender(getTLogLine()) && splitedTlog.length > 4) {
             String tenderTotal = splitedTlog[5].replace("$", "");
             currentTLogTransactionFooter.setTender(NumberUtils.pharseDouble(tenderTotal));
+        } else if (TLogTransactionSign.isDisc(getTLogLine())) {
+           currentTLogTransactionFooter.setHasDiscFlag(true);
         } else if (TLogTransactionSign.isFooter(getTLogLine())) {
             String dateStr = splitedTlog[4] + " " + splitedTlog[5];
             currentTLogTransactionFooter.setTransactionFooterDate(DateUtils.formatTransactionTime(dateStr));

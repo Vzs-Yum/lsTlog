@@ -14,6 +14,7 @@ public class TLogTransactionSign {
     private static String logged = "Logged";
     private static String checkNo = "Check No";
     private static String nounExisting = "Security -";
+    private static String disCount = "Disc";
 
     public static boolean isNoun(String string) {
         return string.contains(transactionNoun) && !string.contains("Promo");
@@ -45,6 +46,10 @@ public class TLogTransactionSign {
 
     public static boolean isTender (String line) {
         return line.contains(tender);
+    }
+
+    public static boolean isDisc (String line) {
+        return line.contains(disCount);
     }
 
     public static boolean isLogged (String line) {

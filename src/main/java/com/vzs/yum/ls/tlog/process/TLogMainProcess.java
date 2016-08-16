@@ -2,13 +2,14 @@ package com.vzs.yum.ls.tlog.process;
 
 import com.vzs.yum.ls.tlog.exception.TLogIllegalArgsException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 
 /**
  * Created by byao on 8/7/16.
  */
-
+@Slf4j
 @AllArgsConstructor
 public class TLogMainProcess implements TLogProcess{
     private TLogMainProcessContext tLogMainProcessContext;
@@ -25,10 +26,9 @@ public class TLogMainProcess implements TLogProcess{
             if (tlog.isDirectory() || !fileName.endsWith(".txt")) {
                 continue;
             }
-            System.out.println("reading file >>> " + fileName);
+            log.info("reading file >>> " + fileName);
             TLogLogProcess tLogLogProcess = new TLogLogProcess(tlog);
             tLogLogProcess.execute();
-//            break;
         }
     }
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class TLogStateContext {
     private TLogState tLogState;
+    private String fileName;
     public void request(String tLogLine) {
         tLogState.setTLogLine(tLogLine);
         tLogState.Handle(this);

@@ -29,7 +29,7 @@ public class TLogTransactionNounState extends TLogState{
             currentTransactionNoun.setMod(mod);
         } else if (TLogTransactionSign.isMealDeal(getTLogLine())) {
             isMealDeal = true;
-        } else if (TLogTransactionSign.isTotal(getTLogLine()) || TLogTransactionSign.isTender(getTLogLine())) {
+        } else if (TLogTransactionSign.isTotal(getTLogLine()) || TLogTransactionSign.isTender(getTLogLine()) || TLogTransactionSign.isDisc(getTLogLine())) {
             goToFooter(context);
         } else if (TLogTransactionSign.isFooter(getTLogLine())) {
             goToFooter(context);

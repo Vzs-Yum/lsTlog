@@ -20,7 +20,7 @@ public class TLogTransactionStartState extends TLogState {
             String transactionHeaderTime = splitedTlog[4] + " " + splitedTlog[5];
             String transactionId = splitedTlog[7];
             Date transactionDate = DateUtils.formatTransactionTime(transactionHeaderTime);
-            tLogTransactionSingleton.findTransationLogAndCreateFooter(transactionId, transactionDate);
+            tLogTransactionSingleton.findTransationLogAndCreateFooter(transactionId, transactionDate, context.getFileName());
         } else  if (TLogTransactionSign.isLogged(getTLogLine())) {
             TLogTransactionFooter currentTLogTransactionFooter = tLogTransactionSingleton.getCurrentTLogTransactionFooter();
             String logged = splitedTlog[3];

@@ -20,6 +20,7 @@ public class TLogLogProcess implements TLogProcess{
         try {
             tLogBufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(tLog), "GB2312"));
             TLogStateContext tLogStateContext = new TLogStateContext();
+            tLogStateContext.setFileName(tLog.getName());
             tLogStateContext.setTLogState(new TLogFileStartState());
             String tlogLine;
             while ((tlogLine = tLogBufferedReader.readLine()) != null) {

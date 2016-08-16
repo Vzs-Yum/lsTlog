@@ -26,3 +26,4 @@ bin/
 build/
 */src/generated/
 export.sql
+logs
