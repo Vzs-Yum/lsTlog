@@ -25,6 +25,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
     private TLogMainProcessContext tLogMainProcessContext;
     private  TLogTransactionFooter previousFooter;
     private XlsxReporter xlsxReporter;
+    private boolean isFirstAdd;
 
     public TLogExcelReporterExecuter(TLogMainProcessContext tLogMainProcessContext) {
         this.tLogMainProcessContext = tLogMainProcessContext;
@@ -50,6 +51,7 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
             }
         });
         for (TLogTransaction tLogTransaction : tLogTransactionList) {
+            isFirstAdd = true;
             addOneTransaction(tLogTransaction);
         }
 
@@ -190,6 +192,10 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         }
         StringBuilder sb = new StringBuilder();
         if (hasAdd) {
+            if (isFirstAdd) {
+                sb.append("第一次");
+                isFirstAdd = false;
+            }
             sb.append("新增");
         }
         if (hasDelete) {
