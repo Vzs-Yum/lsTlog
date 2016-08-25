@@ -1,13 +1,20 @@
 package com.vzs.yum.ls.tlog.ui;
 
 import com.google.common.base.Stopwatch;
+import com.vzs.yum.ls.tlog.ui.DateUI.JXDatePickerCustom;
 import lombok.extern.slf4j.Slf4j;
+import org.jdesktop.swingx.JXDatePicker;
+import org.jdesktop.swingx.JXMonthView;
+import org.jdesktop.swingx.calendar.DateSelectionModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,8 +24,54 @@ import java.util.concurrent.TimeUnit;
 public class TLogUI extends JFrame {
     private String selectedFilePath;
     public TLogUI () {
-        addComponent();
+        testDatePicker();
+//        addComponent();
         createFrame();
+
+    }
+
+    private void testDatePicker() {
+//        JXMonthView picker = new JXMonthView();
+//        picker.setPreferredColumnCount(2);
+//        picker.setPreferredRowCount(2);
+//        picker.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
+//        add(picker);
+
+        JXDatePickerCustom datePicker = new JXDatePickerCustom();
+//        PropertyChangeListener listener = new PropertyChangeListener() {
+//            public void propertyChange(PropertyChangeEvent e) {
+//                if ("date".equals(e.getPropertyName())) {
+//                    System.out.println(((JXMonthView)e.getSource()).
+//                            getSelection());
+//                }
+//            }
+//        };
+
+//        datePicker.addPropertyChangeListener(listener);
+        JXMonthView monthView = datePicker.getMonthView();
+        monthView.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
+        add(datePicker);
+//        monthView.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                System.out.println(((JXMonthView)e.getSource()).
+//                        getSelection());
+//            }
+//        });
+
+//        JXDatePicker datePicker = new JXDatePicker();
+////        Calendar calendar = datePicker.getMonthView().getCalendar();
+////        datePicker.getMonthView().setLowerBound(calendar.getTime());
+////        datePicker.getMonthView().setUpperBound(calendar.getTime());
+//        final JXMonthView monthView = datePicker.getMonthView();
+//
+//        monthView.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
+//        monthView.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//
+//                System.out.println((monthView.getSelection()));
+//            }
+//        });
+//        add(datePicker);
 
     }
 
