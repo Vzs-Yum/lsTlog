@@ -1,7 +1,5 @@
 package com.vzs.yum.ls.tlog.ui.DateUI;
 
-
-import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.SwingXUtilities;
 import org.jdesktop.swingx.calendar.CalendarUtils;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
@@ -30,17 +28,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.logging.Logger;
-
 /**
  * Created by byao on 8/25/16.
  */
 public class BasicDatePickerUICustom extends DatePickerUI {
-
-    @SuppressWarnings("all")
-    private static final Logger LOG = Logger.getLogger(BasicDatePickerUI.class
-            .getName());
-
     protected JXDatePickerCustom datePicker;
     private JButton popupButton;
     private BasicDatePickerUICustom.BasicDatePickerPopup popup;
@@ -353,7 +344,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
      *
      * @param oldMonthView
      */
-    protected void updateMonthViewListeners(JXMonthView oldMonthView) {
+    protected void updateMonthViewListeners(JXMonthViewCustom oldMonthView) {
         DateSelectionModel oldModel = null;
         if (oldMonthView != null) {
             oldMonthView.removePropertyChangeListener(monthViewPropertyListener);
@@ -652,7 +643,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
      * @param oldMonthView the picker's monthView before the change,
      *   may be null.
      */
-    protected void updateFromMonthViewChanged(JXMonthView oldMonthView) {
+    protected void updateFromMonthViewChanged(JXMonthViewCustom oldMonthView) {
         uninstallPopup();
         updateMonthViewListeners(oldMonthView);
         TimeZone oldTimeZone = null;
@@ -855,7 +846,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
      *
      */
     protected void commit() {
-        hidePopup();
+//        hidePopup();
         try {
             datePicker.commitEdit();
         } catch (ParseException ex) {
@@ -1225,7 +1216,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
 
             // Retarget mouse event to the month view.
             if (_forwardReleaseEvent) {
-                JXMonthView monthView = datePicker.getMonthView();
+                JXMonthViewCustom monthView = datePicker.getMonthView();
                 ev = SwingUtilities.convertMouseEvent(popupButton, ev,
                         monthView);
                 monthView.dispatchEvent(ev);
@@ -1254,7 +1245,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
             }
 
             // Retarget mouse event to the month view.
-            JXMonthView monthView = datePicker.getMonthView();
+            JXMonthViewCustom monthView = datePicker.getMonthView();
             ev = SwingUtilities.convertMouseEvent(popupButton, ev, monthView);
             monthView.dispatchEvent(ev);
         }
@@ -1321,7 +1312,7 @@ public class BasicDatePickerUICustom extends DatePickerUI {
                 datePicker.getEditor().setToolTipText(tip);
                 popupButton.setToolTipText(tip);
             } else if (JXDatePickerCustom.MONTH_VIEW.equals(property)) {
-                updateFromMonthViewChanged((JXMonthView) e.getOldValue());
+                updateFromMonthViewChanged((JXMonthViewCustom) e.getOldValue());
             } else if (JXDatePickerCustom.LINK_PANEL.equals(property)) {
                 updateLinkPanel((JComponent) e.getOldValue());
             } else if (JXDatePickerCustom.EDITOR.equals(property)) {
@@ -1439,9 +1430,9 @@ public class BasicDatePickerUICustom extends DatePickerUI {
          * @param e
          */
         private void monthViewActionPerformed(ActionEvent e) {
-            if (JXMonthView.CANCEL_KEY.equals(e.getActionCommand())) {
+            if (JXMonthViewCustom.CANCEL_KEY.equals(e.getActionCommand())) {
                 cancel();
-            } else if (JXMonthView.COMMIT_KEY.equals(e.getActionCommand())) {
+            } else if (JXMonthViewCustom.COMMIT_KEY.equals(e.getActionCommand())) {
                 commit();
             }
         }

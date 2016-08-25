@@ -2,9 +2,8 @@ package com.vzs.yum.ls.tlog.ui;
 
 import com.google.common.base.Stopwatch;
 import com.vzs.yum.ls.tlog.ui.DateUI.JXDatePickerCustom;
+import com.vzs.yum.ls.tlog.ui.DateUI.JXMonthViewCustom;
 import lombok.extern.slf4j.Slf4j;
-import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
 
 import javax.swing.*;
@@ -48,15 +47,15 @@ public class TLogUI extends JFrame {
 //        };
 
 //        datePicker.addPropertyChangeListener(listener);
-        JXMonthView monthView = datePicker.getMonthView();
+        JXMonthViewCustom monthView = datePicker.getMonthView();
         monthView.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
         add(datePicker);
-//        monthView.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println(((JXMonthView)e.getSource()).
-//                        getSelection());
-//            }
-//        });
+        monthView.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(((JXMonthViewCustom)e.getSource()).
+                        getSelection());
+            }
+        });
 
 //        JXDatePicker datePicker = new JXDatePicker();
 ////        Calendar calendar = datePicker.getMonthView().getCalendar();

@@ -2,7 +2,6 @@ package com.vzs.yum.ls.tlog.ui.DateUI;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jdesktop.swingx.JXHyperlink;
-import org.jdesktop.swingx.JXMonthView;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.calendar.DatePickerFormatter;
 import org.jdesktop.swingx.event.EventListenerMap;
@@ -67,7 +66,7 @@ public class JXDatePickerCustom extends JComponent {
     private MessageFormat _linkFormat;
     private Date linkDate;
 
-    private JXMonthView _monthView;
+    private JXMonthViewCustom _monthView;
     private boolean editable = true;
     // PENDING JW: remove - duplication, we have access to super's listenerlist
     private EventListenerMap listenerMap;
@@ -217,7 +216,7 @@ public class JXDatePickerCustom extends JComponent {
     }
 
     private void initMonthView() {
-        _monthView = new JXMonthView();
+        _monthView = new JXMonthViewCustom();
 //        _monthView.setSelectionModel(new SingleDaySelectionModel());
         _monthView.setTraversable(true);
         _monthView.addPropertyChangeListener(getMonthViewListener());
@@ -374,7 +373,7 @@ public class JXDatePickerCustom extends JComponent {
      *
      * @return the month view component
      */
-    public JXMonthView getMonthView() {
+    public JXMonthViewCustom getMonthView() {
         return _monthView;
     }
 
@@ -389,9 +388,9 @@ public class JXDatePickerCustom extends JComponent {
      * @see #setTimeZone
      * @see #getTimeZone
      */
-    public void setMonthView(JXMonthView monthView) {
+    public void setMonthView(JXMonthViewCustom monthView) {
         Contract.asNotNull(monthView, "monthView must not be null");
-        JXMonthView oldMonthView = getMonthView();
+        JXMonthViewCustom oldMonthView = getMonthView();
         TimeZone oldTZ = getTimeZone();
         oldMonthView.removePropertyChangeListener(getMonthViewListener());
         _monthView = monthView;
