@@ -6,14 +6,17 @@ import com.vzs.yum.ls.tlog.process.TLogProcess;
 import com.vzs.yum.ls.tlog.report.TLogExcelReporterExecuter;
 import com.vzs.yum.ls.tlog.report.TLogReportExecute;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * Created by byao on 8/16/16.
  */
 public class TLogUIExecutor {
-    public static void execute(String folderPath) {
+    public static void execute(String folderPath, List<Date> selectionDate) {
 //        String folderPath = "/Users/byao/Ben/doc/yum/T-LOG";
 
-        TLogMainProcessContext tLogMainProcessContext = TLogMainProcessContext.builder().tLogFolderPath(folderPath).build();
+        TLogMainProcessContext tLogMainProcessContext = TLogMainProcessContext.builder().tLogFolderPath(folderPath).selectionDate(selectionDate).build();
         TLogProcess tLogMainProcess = new TLogMainProcess(tLogMainProcessContext);
         tLogMainProcess.execute();
 

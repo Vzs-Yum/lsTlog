@@ -1,6 +1,7 @@
 package com.vzs.yum.ls.tlog.ui;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import com.vzs.yum.ls.tlog.ui.DateUI.JXDatePickerCustom;
 import com.vzs.yum.ls.tlog.ui.DateUI.JXMonthViewCustom;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.util.Calendar;
+import java.util.Date;
+import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,56 +22,27 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TLogUI extends JFrame {
     private String selectedFilePath;
+    private java.util.List<Date> chooseDates = Lists.newArrayList();
     public TLogUI () {
-        testDatePicker();
-//        addComponent();
+        addComponent();
+        addDatePicker();
         createFrame();
 
     }
 
-    private void testDatePicker() {
-//        JXMonthView picker = new JXMonthView();
-//        picker.setPreferredColumnCount(2);
-//        picker.setPreferredRowCount(2);
-//        picker.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
-//        add(picker);
-
+    private void addDatePicker() {
         JXDatePickerCustom datePicker = new JXDatePickerCustom();
-//        PropertyChangeListener listener = new PropertyChangeListener() {
-//            public void propertyChange(PropertyChangeEvent e) {
-//                if ("date".equals(e.getPropertyName())) {
-//                    System.out.println(((JXMonthView)e.getSource()).
-//                            getSelection());
-//                }
-//            }
-//        };
-
-//        datePicker.addPropertyChangeListener(listener);
         JXMonthViewCustom monthView = datePicker.getMonthView();
         monthView.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
         add(datePicker);
         monthView.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                System.out.println(((JXMonthViewCustom)e.getSource()).
-                        getSelection());
+                SortedSet<Date> selection = ((JXMonthViewCustom) e.getSource()).
+                        getSelection();
+                chooseDates = Lists.newArrayList(selection);
+                System.out.println(chooseDates);
             }
         });
-
-//        JXDatePicker datePicker = new JXDatePicker();
-////        Calendar calendar = datePicker.getMonthView().getCalendar();
-////        datePicker.getMonthView().setLowerBound(calendar.getTime());
-////        datePicker.getMonthView().setUpperBound(calendar.getTime());
-//        final JXMonthView monthView = datePicker.getMonthView();
-//
-//        monthView.setSelectionMode(DateSelectionModel.SelectionMode.MULTIPLE_INTERVAL_SELECTION);
-//        monthView.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent e) {
-//
-//                System.out.println((monthView.getSelection()));
-//            }
-//        });
-//        add(datePicker);
-
     }
 
     private void addComponent() {
@@ -93,7 +64,7 @@ public class TLogUI extends JFrame {
                 }
                 Stopwatch stopWatch = Stopwatch.createStarted();
 
-                TLogUIExecutor.execute(selectedFilePath);
+                TLogUIExecutor.execute(selectedFilePath, chooseDates);
                 stopWatch.stop();
                 long elapsed = stopWatch.elapsed(TimeUnit.SECONDS);
                 warningDialog("报表生成完毕(耗时 " + elapsed + "秒)");
