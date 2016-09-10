@@ -1,13 +1,14 @@
 package com.vzs.yum.ls.tlog.report;
 
 import com.vzs.yum.ls.tlog.process.TLogMainProcessContext;
+import com.vzs.yum.ls.tlog.report.vo.TLogSummaryVO;
 import com.vzs.yum.ls.tlog.report.xls.XlsxReporter;
 import com.vzs.yum.ls.tlog.util.DateUtils;
-import com.vzs.yum.ls.tlog.util.FileUtils;
 import com.vzs.yum.ls.tlog.vo.TLogTransaction;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionFooter;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionNoun;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionSingleton;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -27,15 +28,18 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
     private XlsxReporter xlsxReporter;
     private boolean isFirstAdd;
 
+    //for Summary repoter
+    @Getter
+    private TLogSummaryVO tLogSummaryVO = new TLogSummaryVO();
+
     public TLogExcelReporterExecuter(TLogMainProcessContext tLogMainProcessContext) {
         this.tLogMainProcessContext = tLogMainProcessContext;
     }
 
     public void execute() {
 
-        log.info("exporting report");
-        String reportFoder = tLogMainProcessContext.getTLogFolderPath() + File.separatorChar + "report";
-        FileUtils.makeDirs(reportFoder);
+        log.info("exporting normal report");
+        String reportFoder = tLogMainProcessContext.getReporterFolderPath();
         String reportAbsFilePath = reportFoder + File.separatorChar + "TLog(" + DateUtils.phraseToday() + ").xlsx";
 
         createXlsx();
@@ -50,18 +54,24 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
                 return 0;
             }
         });
+
+        tLogSummaryVO.setTotalOrderCount(tLogTransactionList.size());
+
         for (TLogTransaction tLogTransaction : tLogTransactionList) {
             isFirstAdd = true;
             addOneTransaction(tLogTransaction);
+            //summary report
+            tLogSummaryVO.getTLogSummaryUsageTimeVO().commit();
+            tLogSummaryVO.getTLogSummaryGuestTotalVO().commit();
         }
 
         xlsxReporter.closeAndSave(reportAbsFilePath);
-        log.info("report created and close");
+        log.info("normal report created and close");
     }
 
     private void createXlsx() {
         xlsxReporter = new XlsxReporter();
-        xlsxReporter.createXls();
+        xlsxReporter.createSheet("TLog");
     }
 
     private void addOneTransaction(TLogTransaction tLogTransaction) {
@@ -79,18 +89,35 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         boolean isFirst = true;
         for (TLogTransactionFooter tLogTransactionFooter : transactionFooters) {
             if (isFirst) {
+                tLogSummaryVO.getTLogSummaryUsageTimeVO().setTempBeginSeconds(tLogTransaction.getTransactionHeaderTime());
                 firstLineWrite(tLogTransaction, tLogTransactionFooter);
                 isFirst = false;
             } else {
                 String operateJudge;
                 if (tLogTransactionFooter.getTender() != null) {
                     operateJudge = "结账";
+                    //summary report get guest count
+                    tLogSummaryVO.getTLogSummaryGuestTotalVO().addGeustCount(tLogTransactionFooter.getGuestsNum());
+                    tLogSummarySheepOrder(tLogTransactionFooter);
                 } else {
                     operateJudge = judgeOperate(tLogTransactionFooter);
                 }
                 writeNounsWithHead(tLogTransaction, tLogTransactionFooter, createFooterString(tLogTransactionFooter) , operateJudge);
             }
+            tLogSummaryVO.getTLogSummaryUsageTimeVO().setTempEndSeconds(tLogTransactionFooter.getTransactionFooterDate());
             previousFooter = tLogTransactionFooter;
+        }
+    }
+
+    private void tLogSummarySheepOrder(TLogTransactionFooter tLogTransactionFooter) {
+        for (TLogTransactionNoun tLogTransactionNoun : tLogTransactionFooter.getNouns()) {
+            if (tLogTransactionNoun.getIsSet()) {
+                for (TLogTransactionNoun setNoun : tLogTransactionNoun.getSetDetailNouns()) {
+                    tLogSummaryVO.getTLogSheepOrderVO().addProd(tLogTransactionFooter.getGuestsNum(), setNoun.getName(), setNoun.getQuantity());
+                }
+            } else{
+                tLogSummaryVO.getTLogSheepOrderVO().addProd(tLogTransactionFooter.getGuestsNum(), tLogTransactionNoun.getName(), tLogTransactionNoun.getQuantity());
+            }
         }
     }
 
@@ -141,10 +168,20 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         writeLineHeader(tLogTransaction, tLogTransactionFooter, operateContext, operateJudge, false);
         for (TLogTransactionNoun tLogTransactionNoun : tLogTransactionFooter.getNouns()) {
             writeNoun(tLogTransactionNoun);
+            boolean isAdd = isAdd(tLogTransactionNoun);
+            if (isAdd) {
+                tLogSummaryVO.getTLogSummaryAddOrderVO().addNormalCount();
+            }
             if (tLogTransactionNoun.getIsSet()) {
                 for (TLogTransactionNoun setNoun : tLogTransactionNoun.getSetDetailNouns()) {
                     writeNoun(setNoun);
+                    boolean isAddForDetail = isAdd(tLogTransactionNoun);
+                    if (isAddForDetail) {
+                        tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
+                    }
                 }
+            } else if (isAdd){
+                tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
             }
         }
 
@@ -158,6 +195,15 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
         String perFixStr = tLogTransactionNoun.isPostDelete() ? "**" : tLogTransactionNoun.isPreDelete() ? "*" : tLogTransactionNoun.isExisting() ? "" : "%";
         xlsxReporter.addCell(perFixStr + name);
         xlsxReporter.addCell(mod);
+    }
+
+    private boolean isAdd(TLogTransactionNoun tLogTransactionNoun) {
+        if (tLogTransactionNoun.isPostDelete() || tLogTransactionNoun.isPreDelete()) {
+            return false;
+        } else if (!tLogTransactionNoun.isExisting()){
+            return true;
+        }
+        return false;
     }
 
     private String judgeOperate(TLogTransactionFooter tLogTransactionFooter) {

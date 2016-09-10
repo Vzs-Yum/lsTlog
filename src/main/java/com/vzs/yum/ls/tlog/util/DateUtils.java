@@ -25,6 +25,14 @@ public class DateUtils {
         return dateOnlyFormat.format(date);
     }
 
+    public static Date pharseDate(String dateStr) {
+        try {
+            return simpleDateFormat.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static String phraseToday() {
         return simpleDateFormat.format(new Date());
     }
@@ -48,4 +56,41 @@ public class DateUtils {
                 cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
     }
+
+    public static double calculdateSecondsGap(Date startDate, Date endDate) {
+        if (startDate == null || endDate == null) {
+            return 0;
+        }
+
+        long startDateLong = startDate.getTime();
+        long endDateLong = endDate.getTime();
+        return (endDateLong - startDateLong) / 1000.0;
+    }
+
+    private static Calendar createCalendarForSameYear(Date data) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(data);
+        calendar.set(Calendar.YEAR, 1982);
+        calendar.set(Calendar.MONTH, 2);
+        calendar.set(Calendar.DAY_OF_MONTH, 7);
+//        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.get(Calendar.HOUR_OF_DAY) == 12) {
+            System.out.println();
+        }
+        return calendar;
+    }
+
+    public static boolean isBeforeOrEqualForTime(Date basicDate, Date targetDate) {
+        Calendar lineCal = createCalendarForSameYear(basicDate);
+        Calendar targetCal = createCalendarForSameYear(targetDate);
+        return targetCal.compareTo(lineCal) <= 0;
+    }
+
+    public static boolean isAfterOrEqualForTime(Date basicDate, Date targetDate) {
+        Calendar lineCal = createCalendarForSameYear(basicDate);
+        Calendar targetCal = createCalendarForSameYear(targetDate);
+        return targetCal.compareTo(lineCal) >= 0;
+    }
+
+
 }

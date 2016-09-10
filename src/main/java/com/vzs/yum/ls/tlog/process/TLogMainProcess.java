@@ -27,7 +27,8 @@ public class TLogMainProcess implements TLogProcess{
                 continue;
             }
             log.info("reading file >>> " + fileName);
-            TLogLogProcess tLogLogProcess = new TLogLogProcess(tlog, tLogMainProcessContext.getSelectionDate());
+            TLogLogProcess tLogLogProcess = new TLogLogProcess(tlog, tLogMainProcessContext.getSelectionDate(),
+                    tLogMainProcessContext.getStartTimeDate(), tLogMainProcessContext.getEndTimeDate());
             tLogLogProcess.execute();
         }
     }

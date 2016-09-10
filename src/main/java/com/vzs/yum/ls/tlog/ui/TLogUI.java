@@ -4,6 +4,8 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.vzs.yum.ls.tlog.ui.DateUI.JXDatePickerCustom;
 import com.vzs.yum.ls.tlog.ui.DateUI.JXMonthViewCustom;
+import com.vzs.yum.ls.tlog.util.DateUtils;
+import com.vzs.yum.ls.tlog.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jdesktop.swingx.calendar.DateSelectionModel;
 
@@ -25,7 +27,6 @@ public class TLogUI extends JFrame {
     private java.util.List<Date> chooseDates = Lists.newArrayList();
     public TLogUI () {
         addComponent();
-        addDatePicker();
         createFrame();
 
     }
@@ -54,6 +55,13 @@ public class TLogUI extends JFrame {
             }
         });
 
+        addDatePicker();
+
+        JLabel seLabel = new JLabel("开始结束时间");
+        add(seLabel);
+        final JTextField startEndTimePeriod = new JTextField(10);
+        add(startEndTimePeriod);
+
         JButton generate = new JButton("生成报表");
         this.add(generate);
         generate.addActionListener(new ActionListener() {
@@ -64,7 +72,21 @@ public class TLogUI extends JFrame {
                 }
                 Stopwatch stopWatch = Stopwatch.createStarted();
 
-                TLogUIExecutor.execute(selectedFilePath, chooseDates);
+                String[] strings = StringUtils.splictStringBySpace(startEndTimePeriod.getText());
+                Date startTimeDate = null;
+                Date endTimeDate = null;
+                if (strings.length == 2) {
+                    String startTime = strings[0].trim() + "00";
+                    String endTime = strings[1].trim() + "59";
+                    startTimeDate = DateUtils.pharseDate("19820207 " + startTime);
+                    endTimeDate = DateUtils.pharseDate("19820207 " + endTime);
+//                    if (startTimeDate == null || endTimeDate == null) {
+//                        warningDialog("输入时间段格式错误, 格式为(HHmmss HHmmss)");
+//                        return;
+//                    }
+                }
+
+                TLogUIExecutor.execute(selectedFilePath, chooseDates, startTimeDate, endTimeDate);
                 stopWatch.stop();
                 long elapsed = stopWatch.elapsed(TimeUnit.SECONDS);
                 warningDialog("报表生成完毕(耗时 " + elapsed + "秒)");
@@ -88,7 +110,7 @@ public class TLogUI extends JFrame {
 
     private void createFrame() {
         setTitle("TLog report generator (vzs)");
-        setSize(300,88);
+        setSize(300,200);
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - getWidth()) / 2);
         int y = (int) ((dimension.getHeight() - getHeight()) / 2);

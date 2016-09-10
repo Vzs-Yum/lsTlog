@@ -15,6 +15,8 @@ import java.util.List;
 public class TLogLogProcess implements TLogProcess{
     private File tLog;
     private List<Date> selectionDate;
+    private Date startTimeDate;
+    private Date endTImeDate;
     public void execute() {
         if (tLog == null) {
             return;
@@ -26,6 +28,8 @@ public class TLogLogProcess implements TLogProcess{
             tLogStateContext.setFileName(tLog.getName());
             tLogStateContext.setTLogState(new TLogFileStartState());
             tLogStateContext.setSelectionDate(selectionDate);
+            tLogStateContext.setStartTimeDate(startTimeDate);
+            tLogStateContext.setEndTImeDate(endTImeDate);
             String tlogLine;
             while ((tlogLine = tLogBufferedReader.readLine()) != null) {
                 tLogStateContext.request(tlogLine);

@@ -14,6 +14,8 @@ public class TLogStateContext {
     private TLogState tLogState;
     private String fileName;
     private List<Date> selectionDate;
+    private Date startTimeDate;
+    private Date endTImeDate;
     public void request(String tLogLine) {
         tLogState.setTLogLine(tLogLine);
         tLogState.Handle(this);

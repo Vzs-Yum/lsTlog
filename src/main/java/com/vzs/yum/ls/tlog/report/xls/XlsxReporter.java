@@ -20,16 +20,20 @@ public class XlsxReporter {
     int rowCol = 0;
     CellStyle dateStyle;
     CellStyle timeStyle;
-    public void createXls() {
+
+    public XlsxReporter() {
+        workbook = new XSSFWorkbook();
+        createFormater();
+    }
+
+    public void createSheet(String sheetName) {
         try {
-            workbook = new XSSFWorkbook();
-            sheet = workbook.createSheet("TLog");
-            createFormater();
+            sheet = workbook.createSheet(sheetName);
+            rowNum = 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     private void createFormater() {
         CellStyle cellStyle = workbook.createCellStyle();
         CreationHelper createHelper = workbook.getCreationHelper();

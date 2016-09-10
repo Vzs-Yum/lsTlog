@@ -18,6 +18,7 @@ public class TLogTransactionStartState extends TLogState {
     TLogTransactionSingleton tLogTransactionSingleton = TLogTransactionSingleton.getInstance();
     boolean isSkipFlag = false;
     public void Handle(TLogStateContext context) {
+
         String[] splitedTlog = StringUtils.splictStringBySpace(getTLogLine());
         if (TLogTransactionSign.isHeaderStart(getTLogLine()) || isSkipFlag) {
             if (!TLogTransactionSign.isHeaderStart(getTLogLine())) {
@@ -54,15 +55,35 @@ public class TLogTransactionStartState extends TLogState {
     }
 
     private boolean neeedSelection(TLogStateContext context, Date transatcionDate) {
+        boolean needSelect = true;
         List<Date> selectionDate = context.getSelectionDate();
         if (!ListUtils.isEmpty(selectionDate)) {
             for (Date filterDate : selectionDate) {
+                needSelect = false;
                 if (DateUtils.isSameDay(filterDate, transatcionDate)) {
-                    return true;
+                    needSelect = true;
+                    break;
                 }
             }
-            return false;
+
+            if (!needSelect) {
+                return false;
+            }
         }
-        return true;
+
+        Date startTimeDate = context.getStartTimeDate();
+        Date endTImeDate = context.getEndTImeDate();
+        if (startTimeDate != null) {
+            if (!DateUtils.isAfterOrEqualForTime(startTimeDate, transatcionDate)) {
+                return false;
+            }
+        }
+        if (endTImeDate != null) {
+            if (!DateUtils.isBeforeOrEqualForTime(endTImeDate, transatcionDate)) {
+                return false;
+            }
+        }
+
+        return needSelect;
     }
 }
