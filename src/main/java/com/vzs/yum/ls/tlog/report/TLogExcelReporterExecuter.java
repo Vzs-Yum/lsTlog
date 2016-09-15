@@ -4,6 +4,7 @@ import com.vzs.yum.ls.tlog.process.TLogMainProcessContext;
 import com.vzs.yum.ls.tlog.report.vo.TLogSummaryVO;
 import com.vzs.yum.ls.tlog.report.xls.XlsxReporter;
 import com.vzs.yum.ls.tlog.util.DateUtils;
+import com.vzs.yum.ls.tlog.util.ListUtils;
 import com.vzs.yum.ls.tlog.vo.TLogTransaction;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionFooter;
 import com.vzs.yum.ls.tlog.vo.TLogTransactionNoun;
@@ -171,8 +172,13 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
             boolean isAdd = isAdd(tLogTransactionNoun);
             if (isAdd) {
                 tLogSummaryVO.getTLogSummaryAddOrderVO().addNormalCount();
+                tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
             }
             if (tLogTransactionNoun.getIsSet()) {
+//                if (ListUtils.isEmpty(tLogTransactionNoun.getSetDetailNouns())) {
+//                    tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
+//                    continue;
+//                }
                 for (TLogTransactionNoun setNoun : tLogTransactionNoun.getSetDetailNouns()) {
                     writeNoun(setNoun);
                     boolean isAddForDetail = isAdd(tLogTransactionNoun);
@@ -180,8 +186,6 @@ public class TLogExcelReporterExecuter implements TLogReportExecute {
                         tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
                     }
                 }
-            } else if (isAdd){
-                tLogSummaryVO.getTLogSummaryAddOrderVO().addCountWithSetDetail();
             }
         }
 

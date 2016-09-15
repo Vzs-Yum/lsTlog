@@ -90,9 +90,9 @@ public class TLogExcelSummaryReporterExecuter implements TLogReportExecute {
         xlsxReporter.createSheet("TLogSummary");
         int orderCount = tLogSummaryVO.getTotalOrderCount();
         double totalOrderTimeCountSeconds = tLogSummaryVO.getTLogSummaryUsageTimeVO().getTotalSeconds();
-        long totalOrderGuestCoutn = tLogSummaryVO.getTLogSummaryGuestTotalVO().getGuestTotalCount();
-        long totalOrderCoutn = tLogSummaryVO.getTLogSummaryAddOrderVO().getTotalAddCount();
-        long totalORderCountWithSetDetail = tLogSummaryVO.getTLogSummaryAddOrderVO().getTotalAddCountWithSetDetail();
+        double totalOrderGuestCoutn = tLogSummaryVO.getTLogSummaryGuestTotalVO().getGuestTotalCount();
+        double totalOrderCoutn = tLogSummaryVO.getTLogSummaryAddOrderVO().getTotalAddCount();
+        double totalORderCountWithSetDetail = tLogSummaryVO.getTLogSummaryAddOrderVO().getTotalAddCountWithSetDetail();
 
         xlsxReporter.createRow();
         xlsxReporter.addCell("平均订单时间");
