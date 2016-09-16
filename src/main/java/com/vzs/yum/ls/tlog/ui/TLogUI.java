@@ -70,6 +70,12 @@ public class TLogUI extends JFrame {
                     warningDialog("必须选择一个文件路径");
                     return;
                 }
+
+                if (!ifConfigFileExisting()) {
+                    warningDialog("没有 产品分类对照表 文件");
+                    return;
+                }
+
                 Stopwatch stopWatch = Stopwatch.createStarted();
 
                 String[] strings = StringUtils.splictStringBySpace(startEndTimePeriod.getText());
@@ -92,6 +98,11 @@ public class TLogUI extends JFrame {
                 warningDialog("报表生成完毕(耗时 " + elapsed + "秒)");
             }
         });
+    }
+
+    private boolean ifConfigFileExisting() {
+        File file = new File(selectedFilePath + File.separator + "产品分类对照表.xlsx");
+        return file.isFile();
     }
 
     protected void warningDialog(String message) {

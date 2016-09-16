@@ -1,5 +1,6 @@
 package com.vzs.yum.ls.tlog.process;
 
+import com.vzs.yum.ls.tlog.report.vo.menu.TLogMenuReporterVO;
 import com.vzs.yum.ls.tlog.util.DateUtils;
 import com.vzs.yum.ls.tlog.util.FileUtils;
 import lombok.Getter;
@@ -23,6 +24,8 @@ public class TLogMainProcessContext {
     private Date endTimeDate;
     @Setter
     private boolean isDebug;
+    @Setter
+    private TLogMenuReporterVO tLogMenuReporterVO;
 
     public String getReporterFolderPath() {
         return reportFolderPath;

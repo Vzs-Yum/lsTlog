@@ -5,7 +5,9 @@ import com.vzs.yum.ls.tlog.process.TLogMainProcessContext;
 import com.vzs.yum.ls.tlog.process.TLogProcess;
 import com.vzs.yum.ls.tlog.report.TLogExcelReporterExecuter;
 import com.vzs.yum.ls.tlog.report.TLogExcelSummaryReporterExecuter;
+import com.vzs.yum.ls.tlog.report.TLogMenuReporterReader;
 import com.vzs.yum.ls.tlog.report.TLogReportExecute;
+import com.vzs.yum.ls.tlog.report.vo.menu.TLogMenuReporterVO;
 import com.vzs.yum.ls.tlog.util.DateUtils;
 import com.vzs.yum.ls.tlog.util.StringUtils;
 
@@ -26,7 +28,12 @@ public class TLogUIExecutor {
         TLogProcess tLogMainProcess = new TLogMainProcess(tLogMainProcessContext);
         tLogMainProcess.execute();
 
+        TLogMenuReporterReader tLogMenuReporterReader = new TLogMenuReporterReader(tLogMainProcessContext.getTLogFolderPath());
+        tLogMenuReporterReader.execute();
+        TLogMenuReporterVO tLogMenuReporterVO = tLogMenuReporterReader.getTLogMenuReporterVO();
+
         tLogMainProcessContext.setDebug(true);
+        tLogMainProcessContext.setTLogMenuReporterVO(tLogMenuReporterVO);
         TLogExcelReporterExecuter reportExecute = new TLogExcelReporterExecuter(tLogMainProcessContext);
         reportExecute.execute();
 

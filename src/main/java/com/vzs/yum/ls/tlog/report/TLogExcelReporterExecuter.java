@@ -25,16 +25,19 @@ import java.util.List;
 public class TLogExcelReporterExecuter implements TLogReportExecute {
     private TLogTransactionSingleton tLogTransactionSingleton = TLogTransactionSingleton.getInstance();
     private TLogMainProcessContext tLogMainProcessContext;
-    private  TLogTransactionFooter previousFooter;
+    private TLogTransactionFooter previousFooter;
     private XlsxReporter xlsxReporter;
     private boolean isFirstAdd;
 
     //for Summary repoter
     @Getter
-    private TLogSummaryVO tLogSummaryVO = new TLogSummaryVO();
+    private TLogSummaryVO tLogSummaryVO;
 
     public TLogExcelReporterExecuter(TLogMainProcessContext tLogMainProcessContext) {
         this.tLogMainProcessContext = tLogMainProcessContext;
+        tLogSummaryVO = new TLogSummaryVO();
+        tLogSummaryVO.getTLogSheepOrderVO().setSheepMenu(tLogMainProcessContext.getTLogMenuReporterVO().getSheepMenuList());
+
     }
 
     public void execute() {

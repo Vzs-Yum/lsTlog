@@ -12,4 +12,6 @@ public class TLogSummaryVO {
     private TLogSummaryGuestTotalVO tLogSummaryGuestTotalVO = new TLogSummaryGuestTotalVO();
     private TLogSummaryAddOrderVO tLogSummaryAddOrderVO = new TLogSummaryAddOrderVO();
     private TLogSheepOrderVO tLogSheepOrderVO = new TLogSheepOrderVO();
+
+
 }

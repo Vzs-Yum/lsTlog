@@ -2,7 +2,9 @@ package com.vzs.yum.ls.tlog.report.vo;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
+import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,6 +12,9 @@ import java.util.Map;
  */
 @Getter
 public class TLogSheepOrderVO {
+    @Setter
+    private List<String> sheepMenu;
+
     private Map<Long, Long> sheepCountMap = Maps.newHashMap();
     private Map<Long, Long> excludeSheepCountMap = Maps.newHashMap();
 
@@ -18,7 +23,7 @@ public class TLogSheepOrderVO {
             return;
         }
         Map<Long, Long> dishCountMap;
-        if (productName.contains("羊")) {
+        if (sheepMenu.contains(productName)) {
             dishCountMap = sheepCountMap;
         } else {
             dishCountMap = excludeSheepCountMap;
